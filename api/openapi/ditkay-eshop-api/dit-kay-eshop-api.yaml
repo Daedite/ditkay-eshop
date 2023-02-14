@@ -1,0 +1,448 @@
+openapi: 3.0.0
+info:
+  title: ditkay-eshop
+  version: '1.0'
+servers:
+  - url: 'http://localhost:3001'
+paths:
+  '/product/{productId}':
+    parameters:
+      - schema:
+          type: string
+        name: productId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-product-productId
+      description: Get productdata by productId
+  /product:
+    post:
+      summary: ''
+      operationId: post-product
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      description: Create a new product
+    patch:
+      summary: ''
+      operationId: patch-product
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+      description: Update an existing product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+    delete:
+      summary: ''
+      operationId: delete-product
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Delete an existing product
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+  /products:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-products
+      description: Read all products
+  /product-media:
+    post:
+      summary: ''
+      operationId: post-product-media
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductMedia'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Create a new product media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductMedia'
+    patch:
+      summary: ''
+      operationId: patch-product-media
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductMedia'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Update product media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductMedia'
+    delete:
+      summary: ''
+      operationId: delete-product-media
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Delete product media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductMedia'
+  '/product-media/{productMediaId}':
+    parameters:
+      - schema:
+          type: string
+        name: productMediaId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductMedia'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-product-media-productMediaId
+      description: Get existing product mediat by id.
+      parameters: []
+  /product-medias:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductMedia'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-product-medias
+      description: Read all product media
+  '/media/{mediaId}':
+    parameters:
+      - schema:
+          type: string
+        name: mediaId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-media-mediaId
+      description: Get existing media
+  /media:
+    post:
+      summary: ''
+      operationId: post-media
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+      description: Create new media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Media'
+    patch:
+      summary: ''
+      operationId: patch-media
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Update media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Media'
+    delete:
+      summary: ''
+      operationId: delete-media
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Delete existing media
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Media'
+  '/media-type/{mediaTypeId}':
+    parameters:
+      - schema:
+          type: string
+        name: mediaTypeId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaType'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-media-type-mediaTypeId
+      description: Get existing media type by id.
+  /media-type:
+    post:
+      summary: ''
+      operationId: post-media-type
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaType'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Create media type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaType'
+    patch:
+      summary: ''
+      operationId: patch-media-type
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaType'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Update an existing media type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaType'
+    delete:
+      summary: ''
+      operationId: delete-media-type
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      description: Delete existing media type
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaType'
+  /media-types:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MediaType'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-media-types
+      description: Read all media types
+  /medias:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-medias
+      description: read all media
+components:
+  schemas:
+    Product:
+      title: Product
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        buyPrice:
+          type: number
+        sellPrice:
+          type: number
+        quantity:
+          type: integer
+        description:
+          type: string
+    ProductMedia:
+      title: ProductMedia
+      type: object
+      properties:
+        id:
+          type: string
+        mediaId:
+          type: string
+        mediaType:
+          type: string
+    Media:
+      title: Media
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+    MediaType:
+      title: MediaType
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
