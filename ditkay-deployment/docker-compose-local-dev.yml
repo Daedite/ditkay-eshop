@@ -1,0 +1,19 @@
+version: "3.8"
+
+networks:
+  service-net:
+
+
+services:
+  postgres-db:
+    image: bitnami/postgresql:latest
+    hostname: ditkay-eshop-api-postgres
+    container_name: ditkay-eshop-api-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRESQL_USERNAME=root
+      - POSTGRESQL_PASSWORD=root
+      - POSTGRESQL_DATABASE=ditkay_eshop
+    networks:
+      - service-net

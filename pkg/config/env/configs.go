@@ -28,10 +28,10 @@ type DBConfig struct {
 	DBUserName        string `envconfig:"DB_USERNAME" required:"true"`
 	DBPassword        string `envconfig:"DB_PASSWORD" required:"true"`
 	DBName            string `envconfig:"DB_NAME" required:"true"`
-	DBSSLMode         string `envconfig:"DB_SSL_MODE" required:"true"`
-	DBTimeZone        string `envconfig:"DB_TIMEZONE" required:"true"`
-	DBMigrationFolder string `envconfig:"DB_MIGRATION_FOLDER" required:"true"`
-	DBLogLevel        string `envconfig:"DB_LOGLEVEL" required:"true"`
+	DBSSLMode         string `envconfig:"DB_SSL_MODE" default:"disable"`
+	DBTimeZone        string `envconfig:"DB_TIMEZONE" default:"Europe/London"`
+	DBMigrationFolder string `envconfig:"DB_MIGRATION_FOLDER" default:"db/migration"`
+	DBLogLevel        string `envconfig:"DB_LOGLEVEL" default:"silent"`
 }
 
 func (D DBConfig) Port() int {
