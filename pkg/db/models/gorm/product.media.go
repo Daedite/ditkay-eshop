@@ -8,19 +8,19 @@ import (
 
 // ProductMedia defines model for ProductMedia.
 type ProductMedia struct {
-	Id          *string `gorm:"primarykey"`
-	MediaId     *string `sql:"media_id"`
-	MediaTypeId *string `sql:"media_type_id"`
-	ProductId   *string `sql:"product_id"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	Id        int `gorm:"primarykey"`
+	MediaId   int `sql:"media_id"`
+	MediaType int `sql:"media_type"`
+	ProductId int `sql:"product_id"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (p ProductMedia) GetProductMedia() *entity.ProductMedia {
 	return &entity.ProductMedia{
 		Id:        p.Id,
 		MediaId:   p.MediaId,
-		MediaType: p.MediaTypeId,
+		MediaType: p.MediaType,
 		ProductId: p.ProductId,
 	}
 }

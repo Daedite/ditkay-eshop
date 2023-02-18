@@ -11,7 +11,7 @@ import (
 func Run(configManager eshop_api.ConfigManager) int {
 	config, err := configManager.Load()
 	if err != nil {
-		logger.Log.Fatal("Failed to load application configurations: %s", err.Error())
+		logger.Log.Fatalf("Failed to load application configurations: %s", err.Error())
 		return 1
 	}
 	if err := logger.Configure(config.AppConfig().LogLevel()); err != nil {

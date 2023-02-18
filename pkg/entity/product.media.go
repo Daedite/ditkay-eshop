@@ -1,8 +1,8 @@
 package entity
 
 type ProductMedia struct {
-	Id        *string
-	MediaId   *string
-	MediaType *string
-	ProductId *string
+	Id        int
+	MediaId   int
+	MediaType int
+	ProductId int
 }

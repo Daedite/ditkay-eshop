@@ -43,7 +43,7 @@ func (D DBConfig) Host() string {
 }
 
 func (D DBConfig) UserName() string {
-	return D.DBName
+	return D.DBUserName
 }
 
 func (D DBConfig) Password() string {
@@ -51,7 +51,7 @@ func (D DBConfig) Password() string {
 }
 
 func (D DBConfig) Name() string {
-	return D.DBUserName
+	return D.DBName
 }
 
 func (D DBConfig) SSLMode() string {

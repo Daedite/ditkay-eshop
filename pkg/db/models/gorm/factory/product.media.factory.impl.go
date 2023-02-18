@@ -12,10 +12,10 @@ type ProductMediaFactoryImpl struct {
 
 func (p ProductMediaFactoryImpl) CreateProductMediaFactory(productMedia entity.ProductMedia) models.ProductMedia {
 	return &gorm.ProductMedia{
-		Id:          productMedia.Id,
-		MediaId:     productMedia.MediaId,
-		MediaTypeId: productMedia.MediaType,
-		ProductId:   productMedia.ProductId,
+		Id:        productMedia.Id,
+		MediaId:   productMedia.MediaId,
+		MediaType: productMedia.MediaType,
+		ProductId: productMedia.ProductId,
 	}
 }
 

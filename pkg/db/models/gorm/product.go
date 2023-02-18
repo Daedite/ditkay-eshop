@@ -7,12 +7,12 @@ import (
 )
 
 type Product struct {
-	BuyPrice    *float32 `gorm:"primarykey"`
-	Description *string
-	Id          *string
-	Name        *string
-	Quantity    *int
-	SellPrice   *float32 `sql:"sell_price"`
+	BuyPrice    float32 `gorm:"primarykey"`
+	Description string
+	Id          int
+	Name        string
+	Quantity    int
+	SellPrice   float32 `sql:"sell_price"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

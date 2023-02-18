@@ -10,11 +10,14 @@ import (
 type MediaFactory struct {
 }
 
+func NewMediaFactory() *MediaFactory {
+	return &MediaFactory{}
+}
 func (m MediaFactory) CreateMediaFactory(media entity.Media) models.Media {
 	return &gorm.Media{
 		Id:          media.Id,
-		Description: media.Description,
-		Image:       media.Image,
+		Description: &media.Description,
+		Image:       &media.Image,
 	}
 }
 

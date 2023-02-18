@@ -25,7 +25,8 @@ func (p *PostgresDBConnector) Connect() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	return gorm.Open(postgres.Open(p.getConnectionString()), &gorm.Config{
+	connection := p.getConnectionString()
+	return gorm.Open(postgres.Open(connection), &gorm.Config{
 		Logger: logger,
 	})
 }
@@ -34,7 +35,7 @@ func (p *PostgresDBConnector) getConnectionString() string {
 	config := p.Config
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s TimeZone=%s",
 		config.Host(),
-		config.Name(),
+		config.UserName(),
 		config.Password(),
 		config.Name(),
 		config.Port(),

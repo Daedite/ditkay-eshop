@@ -7,7 +7,7 @@ import (
 )
 
 type Media struct {
-	Id          *string `gorm:"primarykey"`
+	Id          int `gorm:"primarykey"`
 	Image       *string
 	Description *string
 	CreatedAt   time.Time
@@ -17,8 +17,8 @@ type Media struct {
 func (m Media) GetMedia() *entity.Media {
 	return &entity.Media{
 		Id:          m.Id,
-		Image:       m.Image,
-		Description: m.Description,
+		Image:       *m.Image,
+		Description: *m.Description,
 	}
 }
 

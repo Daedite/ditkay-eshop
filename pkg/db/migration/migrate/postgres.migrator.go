@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/config"
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/golang-migrate/migrate/v4/source/github"
 )
 
 type PostgresMigrator struct {
@@ -23,7 +26,7 @@ func (p PostgresMigrator) NewMigrator() (*migrate.Migrate, error) {
 func (p PostgresMigrator) connectionString() string {
 	config := p.Config
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
-		config.Name(),
+		config.UserName(),
 		config.Password(),
 		config.Host(),
 		config.Port(),
