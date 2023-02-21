@@ -44,7 +44,7 @@ func (m MediaRepositoryImpl) ReadMedia(id int) (models.Media, error) {
 }
 
 func (m MediaRepositoryImpl) UpdateMedia(media entity.Media) (models.Media, error) {
-	gormMedia := &gormModel.Media{}
+	var gormMedia *gormModel.Media = m.Factory.CreateMediaFactory(media).(*gormModel.Media)
 	if err := m.GormDB.Where("id = ?", media.Id).Updates(media).Error; err != nil {
 		logger.Log.Error(fmt.Errorf("failed to update media id: %d", media.Id))
 		return nil, err

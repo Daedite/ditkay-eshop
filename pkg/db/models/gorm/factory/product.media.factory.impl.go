@@ -7,10 +7,10 @@ import (
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/entity"
 )
 
-type ProductMediaFactoryImpl struct {
+type ProductMediaFactory struct {
 }
 
-func (p ProductMediaFactoryImpl) CreateProductMediaFactory(productMedia entity.ProductMedia) models.ProductMedia {
+func (p ProductMediaFactory) CreateProductMediaFactory(productMedia entity.ProductMedia) models.ProductMedia {
 	return &gorm.ProductMedia{
 		Id:        productMedia.Id,
 		MediaId:   productMedia.MediaId,
@@ -19,8 +19,8 @@ func (p ProductMediaFactoryImpl) CreateProductMediaFactory(productMedia entity.P
 	}
 }
 
-func NewProductMediaFactoryImpl() *ProductMediaFactoryImpl {
-	return &ProductMediaFactoryImpl{}
+func NewProductMediaFactory() *ProductMediaFactory {
+	return &ProductMediaFactory{}
 }
 
-var _ factory.ProductMediaFactory = &ProductMediaFactoryImpl{}
+var _ factory.ProductMediaFactory = &ProductMediaFactory{}

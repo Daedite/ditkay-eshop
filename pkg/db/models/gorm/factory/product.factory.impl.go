@@ -7,10 +7,10 @@ import (
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/entity"
 )
 
-type ProductFactoryImpl struct {
+type ProductFactory struct {
 }
 
-func (p ProductFactoryImpl) CreateProductFactory(product entity.Product) models.Product {
+func (p ProductFactory) CreateProductFactory(product entity.Product) models.Product {
 	return &gorm.Product{
 		Id:          product.Id,
 		Name:        product.Name,
@@ -21,8 +21,8 @@ func (p ProductFactoryImpl) CreateProductFactory(product entity.Product) models.
 	}
 }
 
-func NewProductFactoryImpl() *ProductFactoryImpl {
-	return &ProductFactoryImpl{}
+func NewProductFactory() *ProductFactory {
+	return &ProductFactory{}
 }
 
-var _ factory.ProductFactory = &ProductFactoryImpl{}
+var _ factory.ProductFactory = &ProductFactory{}

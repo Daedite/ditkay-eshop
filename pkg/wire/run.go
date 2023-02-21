@@ -15,7 +15,7 @@ func Run(configManager eshop_api.ConfigManager) int {
 		return 1
 	}
 	if err := logger.Configure(config.AppConfig().LogLevel()); err != nil {
-		logger.Log.Fatal("Failed to configure logger: %s", err.Error())
+		logger.Log.Fatalf("Failed to configure logger: %s", err.Error())
 	}
 	gormDB, err := gorm.NewPostgresDBConnector(config.DBConfig()).Connect()
 	if err != nil {

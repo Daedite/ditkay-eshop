@@ -2,6 +2,7 @@ version: "3.8"
 
 networks:
   service-net:
+    name: mynet
 
 
 services:
@@ -19,7 +20,9 @@ services:
       - service-net
 
   dit-kay-eshop-api:
-    build: ../Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: dit-kay-eshop-api-image
     ports:
       - 3001:3001
@@ -28,9 +31,11 @@ services:
       - AWS_REGION="eu-west-2"
       - APP_LOG_LEVEL=INFO
       - DB_PORT=5432
-      - DB_HOST=localhost
+      - DB_HOST=ditkay-eshop-api-postgres
       - DB_USERNAME=root
       - DB_PASSWORD=root
       - DB_NAME=ditkay_eshop
     networks:
       - service-net
+    links:
+      - postgres-db
