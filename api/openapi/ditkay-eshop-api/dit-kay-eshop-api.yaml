@@ -185,6 +185,32 @@ paths:
       operationId: get-product-media-productMediaId
       description: Get existing product mediat by id.
       parameters: []
+  '/product-media/product/{productId}':
+    parameters:
+      - schema:
+          type: string
+        name: productId
+        in: path
+        required: true
+    get:
+      summary: Your GET All product media with productId endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                $ref: '#/components/schemas/ProductMedia'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-all-product-with-product-id
+      description: Get existing product mediat by id.
+      parameters: []
   /product-medias:
     get:
       summary: Your GET endpoint

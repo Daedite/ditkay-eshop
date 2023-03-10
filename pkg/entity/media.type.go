@@ -2,6 +2,6 @@ package entity
 
 type MediaType struct {
 	Description string
-	Id          int
+	Id          string
 	Name        string
 }

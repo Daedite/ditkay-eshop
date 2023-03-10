@@ -27,7 +27,7 @@ func (p ProductMediaServiceImpl) CreateProductMedia(productMedia entity.ProductM
 	return prod.GetProductMedia(), err
 }
 
-func (p ProductMediaServiceImpl) ReadProductMedia(id int) (*entity.ProductMedia, error) {
+func (p ProductMediaServiceImpl) ReadProductMedia(id string) (*entity.ProductMedia, error) {
 	prod, err := p.Repository.ReadProductMedia(id)
 	if err != nil {
 		logger.Log.Error(err.Error())
@@ -77,4 +77,13 @@ func getProductMediaList(list []gorm.ProductMedia) *[]entity.ProductMedia {
 		})
 	}
 	return &products
+}
+
+func (p ProductMediaServiceImpl) ReadProductMediasByProductId(productId string) (*[]entity.ProductMedia, error) {
+	prod, err := p.Repository.ReadProductMediasByProductId(productId)
+	if err != nil {
+		logger.Log.Error(err.Error())
+		return nil, err
+	}
+	return getProductMediaList(prod), err
 }

@@ -34,7 +34,7 @@ func (p ProductMediaRepositoryImpl) CreateProductMedia(productMedia entity.Produ
 	return gormProductMedia, nil
 }
 
-func (p ProductMediaRepositoryImpl) ReadProductMedia(id int) (models.ProductMedia, error) {
+func (p ProductMediaRepositoryImpl) ReadProductMedia(id string) (models.ProductMedia, error) {
 	gormProductMedia := gormModel.ProductMedia{}
 	if err := p.GormDB.Where("id = ?", id).First(&gormProductMedia).Error; err != nil {
 		logger.Log.Error(fmt.Errorf("failed to get Product media id: %d", id))
@@ -65,6 +65,14 @@ func (p ProductMediaRepositoryImpl) ReadProductMedias() ([]gormModel.ProductMedi
 	gormProduct := []gormModel.ProductMedia{}
 	if err := p.GormDB.Find(&gormProduct).Error; err != nil {
 		logger.Log.Error(fmt.Errorf("failed to reads product medias"))
+		return nil, err
+	}
+	return gormProduct, nil
+}
+func (p ProductMediaRepositoryImpl) ReadProductMediasByProductId(productId string) ([]gormModel.ProductMedia, error) {
+	gormProduct := []gormModel.ProductMedia{}
+	if err := p.GormDB.Where("product_id = ?", productId).Find(&gormProduct).Error; err != nil {
+		logger.Log.Error(fmt.Errorf("failed to reads product medias by productId"))
 		return nil, err
 	}
 	return gormProduct, nil

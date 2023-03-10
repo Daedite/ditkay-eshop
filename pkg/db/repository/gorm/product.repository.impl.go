@@ -34,7 +34,7 @@ func (p ProductRepositoryImpl) CreateProduct(product entity.Product) (models.Pro
 	return gormProduct, nil
 }
 
-func (p ProductRepositoryImpl) ReadProduct(id int) (models.Product, error) {
+func (p ProductRepositoryImpl) ReadProduct(id string) (models.Product, error) {
 	gormProduct := gormModel.Product{}
 	if err := p.GormDB.Where("id = ?", id).First(&gormProduct).Error; err != nil {
 		logger.Log.Error(fmt.Errorf("failed to get Product id: %d", id))

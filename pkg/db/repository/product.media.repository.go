@@ -8,8 +8,9 @@ import (
 
 type ProductMediaRepository interface {
 	CreateProductMedia(productMedia entity.ProductMedia) (models.ProductMedia, error)
-	ReadProductMedia(id int) (models.ProductMedia, error)
+	ReadProductMedia(id string) (models.ProductMedia, error)
 	UpdateProductMedia(productMedia entity.ProductMedia) (models.ProductMedia, error)
 	DeleteProductMedia(productMedia entity.ProductMedia) (bool, error)
 	ReadProductMedias() ([]gormModel.ProductMedia, error)
+	ReadProductMediasByProductId(productId string) ([]gormModel.ProductMedia, error)
 }

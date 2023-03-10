@@ -271,6 +271,9 @@ type ClientInterface interface {
 
 	PostProductMedia(ctx context.Context, body PostProductMediaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// GetAllProductWithProductId request
+	GetAllProductWithProductId(ctx context.Context, productId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetProductMediaProductMediaId request
 	GetProductMediaProductMediaId(ctx context.Context, productMediaId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -610,6 +613,18 @@ func (c *Client) PostProductMediaWithBody(ctx context.Context, contentType strin
 
 func (c *Client) PostProductMedia(ctx context.Context, body PostProductMediaJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostProductMediaRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetAllProductWithProductId(ctx context.Context, productId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetAllProductWithProductIdRequest(c.Server, productId)
 	if err != nil {
 		return nil, err
 	}
@@ -1270,6 +1285,40 @@ func NewPostProductMediaRequestWithBody(server string, contentType string, body 
 	return req, nil
 }
 
+// NewGetAllProductWithProductIdRequest generates requests for GetAllProductWithProductId
+func NewGetAllProductWithProductIdRequest(server string, productId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "productId", runtime.ParamLocationPath, productId)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/product-media/product/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetProductMediaProductMediaIdRequest generates requests for GetProductMediaProductMediaId
 func NewGetProductMediaProductMediaIdRequest(server string, productMediaId string) (*http.Request, error) {
 	var err error
@@ -1506,6 +1555,9 @@ type ClientWithResponsesInterface interface {
 	PostProductMediaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostProductMediaResponse, error)
 
 	PostProductMediaWithResponse(ctx context.Context, body PostProductMediaJSONRequestBody, reqEditors ...RequestEditorFn) (*PostProductMediaResponse, error)
+
+	// GetAllProductWithProductId request
+	GetAllProductWithProductIdWithResponse(ctx context.Context, productId string, reqEditors ...RequestEditorFn) (*GetAllProductWithProductIdResponse, error)
 
 	// GetProductMediaProductMediaId request
 	GetProductMediaProductMediaIdWithResponse(ctx context.Context, productMediaId string, reqEditors ...RequestEditorFn) (*GetProductMediaProductMediaIdResponse, error)
@@ -1868,6 +1920,28 @@ func (r PostProductMediaResponse) StatusCode() int {
 	return 0
 }
 
+type GetAllProductWithProductIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ProductMedia
+}
+
+// Status returns HTTPResponse.Status
+func (r GetAllProductWithProductIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetAllProductWithProductIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type GetProductMediaProductMediaIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2194,6 +2268,15 @@ func (c *ClientWithResponses) PostProductMediaWithResponse(ctx context.Context, 
 		return nil, err
 	}
 	return ParsePostProductMediaResponse(rsp)
+}
+
+// GetAllProductWithProductIdWithResponse request returning *GetAllProductWithProductIdResponse
+func (c *ClientWithResponses) GetAllProductWithProductIdWithResponse(ctx context.Context, productId string, reqEditors ...RequestEditorFn) (*GetAllProductWithProductIdResponse, error) {
+	rsp, err := c.GetAllProductWithProductId(ctx, productId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetAllProductWithProductIdResponse(rsp)
 }
 
 // GetProductMediaProductMediaIdWithResponse request returning *GetProductMediaProductMediaIdResponse
@@ -2608,6 +2691,32 @@ func ParsePostProductMediaResponse(rsp *http.Response) (*PostProductMediaRespons
 	return response, nil
 }
 
+// ParseGetAllProductWithProductIdResponse parses an HTTP response from a GetAllProductWithProductIdWithResponse call
+func ParseGetAllProductWithProductIdResponse(rsp *http.Response) (*GetAllProductWithProductIdResponse, error) {
+	bodyBytes, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetAllProductWithProductIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ProductMedia
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetProductMediaProductMediaIdResponse parses an HTTP response from a GetProductMediaProductMediaIdWithResponse call
 func ParseGetProductMediaProductMediaIdResponse(rsp *http.Response) (*GetProductMediaProductMediaIdResponse, error) {
 	bodyBytes, err := ioutil.ReadAll(rsp.Body)
@@ -2762,6 +2871,9 @@ type ServerInterface interface {
 
 	// (POST /product-media)
 	PostProductMedia(ctx echo.Context) error
+	// Your GET All product media with productId endpoint
+	// (GET /product-media/product/{productId})
+	GetAllProductWithProductId(ctx echo.Context, productId string) error
 	// Your GET endpoint
 	// (GET /product-media/{productMediaId})
 	GetProductMediaProductMediaId(ctx echo.Context, productMediaId string) error
@@ -2939,6 +3051,22 @@ func (w *ServerInterfaceWrapper) PostProductMedia(ctx echo.Context) error {
 	return err
 }
 
+// GetAllProductWithProductId converts echo context to params.
+func (w *ServerInterfaceWrapper) GetAllProductWithProductId(ctx echo.Context) error {
+	var err error
+	// ------------- Path parameter "productId" -------------
+	var productId string
+
+	err = runtime.BindStyledParameterWithLocation("simple", false, "productId", runtime.ParamLocationPath, ctx.Param("productId"), &productId)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid format for parameter productId: %s", err))
+	}
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetAllProductWithProductId(ctx, productId)
+	return err
+}
+
 // GetProductMediaProductMediaId converts echo context to params.
 func (w *ServerInterfaceWrapper) GetProductMediaProductMediaId(ctx echo.Context) error {
 	var err error
@@ -3033,6 +3161,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/product-media", wrapper.DeleteProductMedia)
 	router.PATCH(baseURL+"/product-media", wrapper.PatchProductMedia)
 	router.POST(baseURL+"/product-media", wrapper.PostProductMedia)
+	router.GET(baseURL+"/product-media/product/:productId", wrapper.GetAllProductWithProductId)
 	router.GET(baseURL+"/product-media/:productMediaId", wrapper.GetProductMediaProductMediaId)
 	router.GET(baseURL+"/product-medias", wrapper.GetProductMedias)
 	router.GET(baseURL+"/product/:productId", wrapper.GetProductProductId)
@@ -3043,22 +3172,22 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9xZTY/bNhD9K8K0R+3KbnrSMW2xCIpFjSA9FEUOXHFiM5VILjlK4xr+7wUpyZasj7Ub",
-	"W1L3piWH5PC9edo38g4SlWklUZKFeAc22WDG/OMjcsHcgzZKoyGBfpijTYzQJJR0f9JWI8RgyQi5hn0I",
-	"gncPZ2yNHTP7EEhQ6oaKA8MqQj19xoTcWj/xwY9eKRvJsnOS8Wd2JLQyiucJtdN5yrcrI5L63jLPntC4",
-	"VdfNNYTnnEkStK1NCkm4Lk6zmKZ9udTuWV2l/5Y9ddCTbeai3w3MVTy2ZnVxXOfadsI9xeIihfyk/B7l",
-	"Ci7oL7a9Q7tRGkL4gsZ6CmB5v3AHK42SaQExvLlf3C8gBM1o4y8ZZdXlOaZI2Co5+NmPB/hVWBJyHWRl",
-	"Xg4q5mLcfcqoKmeDzzlaequ45y5RklD6amJapyLx66LPtqiTQpLu6XuDnyCG76KjZqNSsFGx994DYNBq",
-	"JW3B0w+LRTvr3351F/+xa+ot48H7IsEiZtmO+V2ynDbKiH+QF5hrRsmmI1BzRtgDysqtmRKT6x4S3hxj",
-	"Zakd95NBB7HEv/tgVpZeN8p+uJDqHZWvl4v0GlDxou8VbfmP4Gbw+f1nKl4mz0LrqOaJwbr+QdMqewjz",
-	"StrTQb4cB/ICC35V3JsvjWh3sCfv+N6tXmMHKQ9IXXIInraB4Pcthh7wSNDjcX94HaUbgs2zjJktxPCH",
-	"yk3w8MuHACXXSki/iWaGZUhoLMR/7kC4PZy5gsrWQnYCynMuDHKIyeQY1m58agg/NtmzvYS9R8YDlqY1",
-	"suwgTfZbyRGEmb2ApYOJZcaw7eSsHYAtFXGZGnqhfSwbg/+/FbtW1f/niu8vdtMo9l4uRizxWZa3Pvbv",
-	"L/jEuvnRh1a5yyceG+lb/Beudnfp13f5mqXNTVr98NwtZR+q3k+OBepNvWTtmO7u5QUDyHxz14uTsjQh",
-	"TMsxYLqV+ysxvTv3K08ZP/iR5+T71A0JmfUnn2Go6uKeAVI3OWvarrHx0hj4MjQLEpajkTDKmyTa6Voa",
-	"Z/vnBlk00FHWL7lqnASvpr6vYLJ1G5qLvHaD0zMazGGxnfA2jgVvcjZfJ35QzEtiKcM4I+YEcvzNqB/u",
-	"VS1mKo83R118gyTOF4MdIGZUCcyv+v1vtOZLRVRuUohhQ6TjKEpVwtKNshS/WSyWsP+4/zcAAP//RV6f",
-	"cqkfAAA=",
+	"H4sIAAAAAAAC/9xZTY/bNhD9KwLbo3ZlNz3plrTFIiiMGkGKoihyoMWJxVQiueQoiWv4vxekJFuyPiJv",
+	"LFm7Ny055Azfm0fPcPckkqmSAgQaEu6JiWJIqftcAePUfigtFWjk4IYZmEhzhVwK+yfuFJCQGNRcbMnB",
+	"J5y1D6d0Cy0zB58gx8QO5Q790kJuPkGEdq2beO9GrxSNoOmQYJzPloDWWrIswmY4m2y31jyq7i2ydAPa",
+	"rrpurD55zKhAjrvKJBcI29ybgSTpiqVyzvIo3afsyIOOaFNr/bZnruSxMatyd61rmwF3JIu15OKjdHsU",
+	"KxjHf+nuDkwsFfHJZ9DGUUCW9wvrWCoQVHESklf3i/sF8YmiGLtDBml5eAYJIDRSjvzqxj34yg1ysfXS",
+	"Ii4LFbU29jyFVRmzhscMDL6RzHEXSYEgXDZRpRIeuXXBJ5PnSS5J+/Wjho8kJD8EJ80GhWCDfO+DA0CD",
+	"UVKYnKefFotm1H/8bg/+c9vUG8q8d3mAuc2yafOnoBnGUvP/gOWYK4pR3GKoGEXoAGVt19wSk+s68UfH",
+	"WBps2v2iwUIs4EsXzNLgy0bZDedSvcPierlIrx7mF32naIsfgtHgc/vPVLxUDELrpOYbg3V9R7dVdh/m",
+	"pbRvB/lyGshzLNhVca9fGsH+WJ68ZQe7egstpDwAtsnB2+w8zu4bDD3AiaDVaX/yMlLXJyZLU6p3JCR/",
+	"y0x7D7+990AwJblwmyiqaQoI2pDwnz3hdg9bXJGyrCXpGSiPGdfASIg6A79y4vOC8EOdPdNJ2DugzKNJ",
+	"UiHL9NJkvpccjpCaC1g6FrFUa7q7OWtHYAtFXKaGTmhXRWPw/Euxa2X9kzO+O9l1Ldk7uZgwxWeZ3urU",
+	"v3+jTqwWP+rYKrfViadGeoxf4XJ3G351l69pUt+k0Q/PvaTsQtXVk1OBOmotWXHT3r18owCkrrnrxEka",
+	"vCFMyylgGqv6KzC9G/rKU9j3PvKcvU+NSMisn3z6oaqKewZIjeLrtl1j7dLoeRmaBQnLyUiY5CYp/wr2",
+	"xzftgSV0jS/saSpfJ0lx1L84lkoat7qeNr9bq7jXSVKHyPvCMfaOKF9YhasabBfV4XW+S55XF/VLg8mu",
+	"Ir+ueXrhfD+JztVTe6sapwMeFPov1zPepmm56pzNt/MafDMWZowitQKpKrYL7ikvw+eki++QxHAxmB5i",
+	"JpXA/LLf/U9efy6JynRCQhIjqjAIEhnRJJYGw1eLxZIcPhz+DwAA///mmNAlmSEAAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

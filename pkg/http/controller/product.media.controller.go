@@ -3,12 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	spec "github.com/ESPOIR-DITE/ditkay-eshop/api/server/ditkay-eshop-api"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"strconv"
 )
 
 func (d DitKayEshopApiController) DeleteProductMedia(ctx echo.Context) error {
@@ -69,17 +67,24 @@ func (d DitKayEshopApiController) PostProductMedia(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, response)
 }
 func (d DitKayEshopApiController) GetProductMediaProductMediaId(ctx echo.Context, productMediaId string) error {
-	var ProductMedia int
 	logger.Log.Info("Product Media received for Read operation.")
 	if productMediaId == "" {
 		return ctx.JSON(http.StatusBadRequest, errors.New("Missing required param."))
 	}
-	ProductMedia, err := strconv.Atoi(productMediaId)
+
+	response, err := d.ProductMediaService.ReadProductMedia(productMediaId)
 	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, errors.New(fmt.Sprintf("error converting product media id %s", err)))
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+	return ctx.JSON(http.StatusOK, response)
+}
+func (d DitKayEshopApiController) GetAllProductWithProductId(ctx echo.Context, productId string) error {
+	logger.Log.Info("Product Media received retrieve All by product request.")
+	if productId == "" {
+		return ctx.JSON(http.StatusBadRequest, errors.New("Missing required param."))
 	}
 
-	response, err := d.ProductMediaService.ReadProductMedia(ProductMedia)
+	response, err := d.ProductMediaService.ReadProductMediasByProductId(productId)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}

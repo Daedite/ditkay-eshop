@@ -7,7 +7,7 @@ import (
 )
 
 type Media struct {
-	Id          int `gorm:"primarykey"`
+	Id          string `gorm:"primarykey"`
 	Image       *string
 	Description *string
 	CreatedAt   time.Time

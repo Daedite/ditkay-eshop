@@ -8,10 +8,10 @@ import (
 
 // ProductMedia defines model for ProductMedia.
 type ProductMedia struct {
-	Id        int `gorm:"primarykey"`
-	MediaId   int `sql:"media_id"`
-	MediaType int `sql:"media_type"`
-	ProductId int `sql:"product_id"`
+	Id        string `gorm:"primarykey"`
+	MediaId   string `sql:"media_id"`
+	MediaType string `sql:"media_type"`
+	ProductId string `sql:"product_id"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

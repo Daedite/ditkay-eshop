@@ -8,7 +8,7 @@ import (
 
 type ProductRepository interface {
 	CreateProduct(product entity.Product) (models.Product, error)
-	ReadProduct(id int) (models.Product, error)
+	ReadProduct(id string) (models.Product, error)
 	UpdateProduct(product entity.Product) (models.Product, error)
 	DeleteProduct(product entity.Product) (bool, error)
 	ReadProducts() ([]gorm.Product, error)

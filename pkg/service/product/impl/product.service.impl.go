@@ -27,7 +27,7 @@ func (p ProductServiceImpl) CreateProduct(product entity.Product) (*entity.Produ
 	return prod.GetProduct(), err
 }
 
-func (p ProductServiceImpl) ReadProduct(id int) (*entity.Product, error) {
+func (p ProductServiceImpl) ReadProduct(id string) (*entity.Product, error) {
 	prod, err := p.Repository.ReadProduct(id)
 	if err != nil {
 		logger.Log.Error(err.Error())

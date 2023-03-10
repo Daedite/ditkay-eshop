@@ -9,7 +9,7 @@ import (
 type Product struct {
 	BuyPrice    float32 `gorm:"primarykey"`
 	Description string
-	Id          int
+	Id          string
 	Name        string
 	Quantity    int
 	SellPrice   float32 `sql:"sell_price"`

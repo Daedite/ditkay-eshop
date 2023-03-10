@@ -7,7 +7,7 @@ import (
 )
 
 type MediaType struct {
-	Id          int `gorm:"primarykey"`
+	Id          string `gorm:"primarykey"`
 	Description string
 	Name        string
 	CreatedAt   time.Time
