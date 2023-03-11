@@ -8,7 +8,7 @@ import (
 
 type MediaRepository interface {
 	CreateMedia(media entity.Media) (models.Media, error)
-	ReadMedia(id int) (models.Media, error)
+	ReadMedia(id string) (models.Media, error)
 	UpdateMedia(media entity.Media) (models.Media, error)
 	DeleteMedia(media entity.Media) (bool, error)
 	ReadMedias() ([]gorm.Media, error)

@@ -34,9 +34,9 @@ func (m MediaRepositoryImpl) CreateMedia(media entity.Media) (models.Media, erro
 	return gormMedia, nil
 }
 
-func (m MediaRepositoryImpl) ReadMedia(id int) (models.Media, error) {
+func (m MediaRepositoryImpl) ReadMedia(id string) (models.Media, error) {
 	gormMedia := &gormModel.Media{}
-	if err := m.GormDB.First(&gormMedia, id).Error; err != nil {
+	if err := m.GormDB.Where("id = ?", id).First(&gormMedia).Error; err != nil {
 		logger.Log.Error(fmt.Printf("faile to get media with id: %d, err: %s", id, err))
 		return nil, err
 	}

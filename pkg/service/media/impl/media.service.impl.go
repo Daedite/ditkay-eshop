@@ -27,7 +27,7 @@ func (m MediaServiceImpl) CreateMedia(media entity.Media) (*entity.Media, error)
 	return med.GetMedia(), nil
 }
 
-func (m MediaServiceImpl) ReadMedia(id int) (*entity.Media, error) {
+func (m MediaServiceImpl) ReadMedia(id string) (*entity.Media, error) {
 	med, err := m.Repository.ReadMedia(id)
 	if err != nil {
 		logger.Log.Error(err.Error())

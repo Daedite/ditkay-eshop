@@ -2,12 +2,10 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	spec "github.com/ESPOIR-DITE/ditkay-eshop/api/server/ditkay-eshop-api"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/logger"
 	"github.com/labstack/echo/v4"
 	"net/http"
-	"strconv"
 )
 
 func (d DitKayEshopApiController) DeleteMedia(ctx echo.Context) error {
@@ -66,11 +64,7 @@ func (d DitKayEshopApiController) GetMediaMediaId(ctx echo.Context, mediaId stri
 	if mediaId == "" {
 		return ctx.NoContent(http.StatusBadRequest)
 	}
-	id, err := strconv.Atoi(mediaId)
-	if err != nil {
-		return ctx.JSON(http.StatusBadRequest, fmt.Sprintf("error during conversion %s", err))
-	}
-	response, err := d.MediaService.ReadMedia(id)
+	response, err := d.MediaService.ReadMedia(mediaId)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}

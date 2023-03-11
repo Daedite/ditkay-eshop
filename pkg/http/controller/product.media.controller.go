@@ -85,6 +85,7 @@ func (d DitKayEshopApiController) GetAllProductWithProductId(ctx echo.Context, p
 	}
 
 	response, err := d.ProductMediaService.ReadProductMediasByProductId(productId)
+
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, err)
 	}

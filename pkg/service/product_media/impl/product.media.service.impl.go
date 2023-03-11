@@ -5,15 +5,19 @@ import (
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/db/repository"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/entity"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/logger"
+	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/service/media"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/service/product_media"
 )
 
 type ProductMediaServiceImpl struct {
-	Repository repository.ProductMediaRepository
+	Repository   repository.ProductMediaRepository
+	MediaService media.MediaService
 }
 
-func NewProductMediaService(repository repository.ProductMediaRepository) *ProductMediaServiceImpl {
-	return &ProductMediaServiceImpl{Repository: repository}
+func NewProductMediaService(repository repository.ProductMediaRepository, mediaService media.MediaService) *ProductMediaServiceImpl {
+	return &ProductMediaServiceImpl{Repository: repository,
+		MediaService: mediaService,
+	}
 }
 
 var _ product_media.ProductMediaService = &ProductMediaServiceImpl{}
@@ -79,11 +83,22 @@ func getProductMediaList(list []gorm.ProductMedia) *[]entity.ProductMedia {
 	return &products
 }
 
-func (p ProductMediaServiceImpl) ReadProductMediasByProductId(productId string) (*[]entity.ProductMedia, error) {
-	prod, err := p.Repository.ReadProductMediasByProductId(productId)
+func (p ProductMediaServiceImpl) ReadProductMediasByProductId(productId string) ([]entity.Media, error) {
+	var medias []entity.Media
+	mediaProducts, err := p.Repository.ReadProductMediasByProductId(productId)
 	if err != nil {
 		logger.Log.Error(err.Error())
 		return nil, err
 	}
-	return getProductMediaList(prod), err
+	if len(mediaProducts) < 0 {
+		return medias, nil
+	}
+	for _, mediaProduct := range mediaProducts {
+		mediaResponse, err := p.MediaService.ReadMedia(mediaProduct.MediaId)
+		if err != nil {
+			continue
+		}
+		medias = append(medias, *mediaResponse)
+	}
+	return medias, err
 }

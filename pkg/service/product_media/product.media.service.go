@@ -10,5 +10,5 @@ type ProductMediaService interface {
 	UpdateProductMedia(productMedia entity.ProductMedia) (*entity.ProductMedia, error)
 	DeleteProductMedia(productMedia entity.ProductMedia) (bool, error)
 	ReadProductMedias() (*[]entity.ProductMedia, error)
-	ReadProductMediasByProductId(productId string) (*[]entity.ProductMedia, error)
+	ReadProductMediasByProductId(productId string) ([]entity.Media, error)
 }

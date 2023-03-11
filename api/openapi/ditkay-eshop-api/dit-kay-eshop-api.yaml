@@ -203,13 +203,13 @@ paths:
               schema:
                 type: array
                 items:
-                $ref: '#/components/schemas/ProductMedia'
+                $ref: '#/components/schemas/Media'
         '400':
           description: Bad Request
         '401':
           description: Unauthorized
       operationId: get-all-product-with-product-id
-      description: Get existing product mediat by id.
+      description: Get existing product media by id.
       parameters: []
   /product-medias:
     get:
