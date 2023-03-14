@@ -1,0 +1,4 @@
+DROP TABLE IF EXISTS 'product';
+DROP TABLE IF EXISTS 'media';
+DROP TABLE IF EXISTS 'media_type';
+DROP TABLE IF EXISTS 'product_media';
