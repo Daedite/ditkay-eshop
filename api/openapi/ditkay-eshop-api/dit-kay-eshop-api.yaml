@@ -230,6 +230,25 @@ paths:
           description: Unauthorized
       operationId: get-product-medias
       description: Read all product media
+  /product-client:
+    get:
+      summary: Your GET endpoint
+      tags: [ ]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductClient'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: get-product-client
+      description: Read all product client
   '/media/{mediaId}':
     parameters:
       - schema:
@@ -493,3 +512,12 @@ components:
           type: string
         description:
           type: string
+    ProductClient:
+      title: ProductClient
+      type: object
+      properties:
+        product:
+            $ref: '#/components/schemas/Product'
+        media:
+            $ref: '#/components/schemas/Media'
+

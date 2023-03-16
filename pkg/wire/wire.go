@@ -26,10 +26,10 @@ func wire(config config.ServiceConfiguration, gorm *gorm.DB) server.HttpServer {
 	productMediaRepository := gorm2.NewProductMediaRepositoryImpl(gorm, productMediaFactory)
 	mediaTypeRepository := gorm2.NewMediaTypeRepositoryImpl(gorm, mediaTypeFactory)
 
-	productService := product.NewProductServiceImpl(productRepository)
 	mediaTypeService := impl.NewMediaTypeServiceImpl(mediaTypeRepository)
 	mediaService := impl2.NewMediaService(mediaRepository)
 	productMediaService := impl3.NewProductMediaService(productMediaRepository, mediaService)
+	productService := product.NewProductServiceImpl(productRepository, productMediaService)
 
 	mediaEntityFactory := factory.NewMediaFactoryImpl()
 	mediaTypeEntityFactory := factory.NewMediaTypeFactoryImpl()

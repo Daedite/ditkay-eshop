@@ -10,4 +10,5 @@ type ProductService interface {
 	UpdateProduct(product entity.Product) (*entity.Product, error)
 	DeleteProduct(product entity.Product) (bool, error)
 	ReadProducts() (*[]entity.Product, error)
+	ReadProductsForClient() (*[]entity.ProductClient, error)
 }

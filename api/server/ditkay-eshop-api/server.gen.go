@@ -45,6 +45,12 @@ type Product struct {
 	SellPrice   *float32 `json:"sellPrice,omitempty"`
 }
 
+// ProductClient defines model for ProductClient.
+type ProductClient struct {
+	Media   *Media   `json:"media,omitempty"`
+	Product *Product `json:"product,omitempty"`
+}
+
 // ProductMedia defines model for ProductMedia.
 type ProductMedia struct {
 	Id        *string `json:"id,omitempty"`
@@ -221,6 +227,9 @@ type ClientInterface interface {
 	PostProductWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	PostProduct(ctx context.Context, body PostProductJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetProductClient request
+	GetProductClient(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// DeleteProductMedia request with any body
 	DeleteProductMediaWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -519,6 +528,18 @@ func (c *Client) PostProductWithBody(ctx context.Context, contentType string, bo
 
 func (c *Client) PostProduct(ctx context.Context, body PostProductJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostProductRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetProductClient(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetProductClientRequest(c.Server)
 	if err != nil {
 		return nil, err
 	}
@@ -1177,6 +1198,33 @@ func NewPostProductRequestWithBody(server string, contentType string, body io.Re
 	return req, nil
 }
 
+// NewGetProductClientRequest generates requests for GetProductClient
+func NewGetProductClientRequest(server string) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/product-client")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewDeleteProductMediaRequest calls the generic DeleteProductMedia builder with application/json body
 func NewDeleteProductMediaRequest(server string, body DeleteProductMediaJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -1556,6 +1604,9 @@ type ClientWithResponsesInterface interface {
 
 	PostProductWithResponse(ctx context.Context, body PostProductJSONRequestBody, reqEditors ...RequestEditorFn) (*PostProductResponse, error)
 
+	// GetProductClient request
+	GetProductClientWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetProductClientResponse, error)
+
 	// DeleteProductMedia request with any body
 	DeleteProductMediaWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*DeleteProductMediaResponse, error)
 
@@ -1885,6 +1936,28 @@ func (r PostProductResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r PostProductResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetProductClientResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]ProductClient
+}
+
+// Status returns HTTPResponse.Status
+func (r GetProductClientResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetProductClientResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2262,6 +2335,15 @@ func (c *ClientWithResponses) PostProductWithResponse(ctx context.Context, body 
 		return nil, err
 	}
 	return ParsePostProductResponse(rsp)
+}
+
+// GetProductClientWithResponse request returning *GetProductClientResponse
+func (c *ClientWithResponses) GetProductClientWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetProductClientResponse, error) {
+	rsp, err := c.GetProductClient(ctx, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetProductClientResponse(rsp)
 }
 
 // DeleteProductMediaWithBodyWithResponse request with arbitrary body returning *DeleteProductMediaResponse
@@ -2684,6 +2766,32 @@ func ParsePostProductResponse(rsp *http.Response) (*PostProductResponse, error) 
 	return response, nil
 }
 
+// ParseGetProductClientResponse parses an HTTP response from a GetProductClientWithResponse call
+func ParseGetProductClientResponse(rsp *http.Response) (*GetProductClientResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetProductClientResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []ProductClient
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseDeleteProductMediaResponse parses an HTTP response from a DeleteProductMediaWithResponse call
 func ParseDeleteProductMediaResponse(rsp *http.Response) (*DeleteProductMediaResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2926,6 +3034,9 @@ type ServerInterface interface {
 
 	// (POST /product)
 	PostProduct(ctx echo.Context) error
+	// Your GET endpoint
+	// (GET /product-client)
+	GetProductClient(ctx echo.Context) error
 
 	// (DELETE /product-media)
 	DeleteProductMedia(ctx echo.Context) error
@@ -3104,6 +3215,15 @@ func (w *ServerInterfaceWrapper) PostProduct(ctx echo.Context) error {
 	return err
 }
 
+// GetProductClient converts echo context to params.
+func (w *ServerInterfaceWrapper) GetProductClient(ctx echo.Context) error {
+	var err error
+
+	// Invoke the callback with all the unmarshalled arguments
+	err = w.Handler.GetProductClient(ctx)
+	return err
+}
+
 // DeleteProductMedia converts echo context to params.
 func (w *ServerInterfaceWrapper) DeleteProductMedia(ctx echo.Context) error {
 	var err error
@@ -3239,6 +3359,7 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 	router.DELETE(baseURL+"/product", wrapper.DeleteProduct)
 	router.PATCH(baseURL+"/product", wrapper.PatchProduct)
 	router.POST(baseURL+"/product", wrapper.PostProduct)
+	router.GET(baseURL+"/product-client", wrapper.GetProductClient)
 	router.DELETE(baseURL+"/product-media", wrapper.DeleteProductMedia)
 	router.PATCH(baseURL+"/product-media", wrapper.PatchProductMedia)
 	router.POST(baseURL+"/product-media", wrapper.PostProductMedia)
@@ -3253,23 +3374,24 @@ func RegisterHandlersWithBaseURL(router EchoRouter, si ServerInterface, baseURL 
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"H4sIAAAAAAAC/9xa32/bNhD+V4TbHpXIXvekt3YbgmIIFgQdhmHoAyNebXYSyZCntJ7h/30gJdmS9SN2",
-	"a8tK3mTySN593931I5s1JCrTSqIkC/EabLLEjPnPW+SCuQ9tlEZDAv0wR5sYoUko6X7SSiPEYMkIuYBN",
-	"CIJ3D2dsgR0zmxBIUOqGigPDykI9fMaE3Fo/8cGPnsgbybJDnPFndjh0ZxTPE2q785Cv7oxI6nvLPHtA",
-	"41ad1tcQHnMmSdCqNikk4aI4zWKa9vlSi7MKpT/Knjzo8TZz1u8H5ioeW7O6OK5zbdvhnmRxlkJ+Un6P",
-	"cgUX9C9bXaFdKg0hPKGxngKYX8/cwUqjZFpADG+uZ9czCEEzWvogo6wKnmOKhK2Ug1/9eIBfhSUhF0FW",
-	"+uWgYs7GxVNaVT4bfMzR0jvFPXeJkoTSZxPTOhWJXxd9tkWeFCXpvn40+Ali+CHa1WxUFmxU7L3xABi0",
-	"Wklb8PTTbNb2+o/fXeA/d029Yzy4LxwsbOZtmz8ly2mpjPgPeYG5ZpQsOww1Z4Q9oNy5NZfE5LSHhGfH",
-	"WFlq2/1i0EEs8UsfzMrS60bZDxelekVlezmqXgMqGn1v0Zb/EJwNPr//RIuXyYPQ2lXzhcE6/UGXrewh",
-	"zKvSvhzk83EgL7DgJ8W92TSi9VaevOcbt3qBHaTcIHWVQ/CwCgS/bjF0gzuCbnf7w+tI3RBsnmXMrCCG",
-	"v1VugpvfPgQouVZC+k00MyxDQmMh/mcNwu3hxBVUshayPVAec2GQQ0wmx7AW8b4g/Nhkz/YSdo+MByxN",
-	"a2TZQZrs95IjCDN7BEtbEcuMYauLs7YFNjKYqaeqMIaKojAsEf4iaBkI3sL43hv5uPsgfgm5+s15egCO",
-	"7ebSm6m3NV9etrK9ODF2IK/rvaOXixE7xiS7hd49hzwju+taUm9fHrpk9+5d4hyiptrduV/f5WuWNjdp",
-	"PS9MXaH3oerl+VignlWa147pvgw+o6eZvyv34qQsXRCm+RgwnUtMl5heHfpoVtoPvpntPfedkZBJv6AN",
-	"Q1Uv7gkgdZazLnsJbzSNgYe2SZAwH42EUTpJ9Stab/+L4EAJ3eBr4Ir+Nk3LSP8SVBXS6xXXb9N0Dxp/",
-	"Z9uie6T61g28jtLfTZ4rfm+Puic1IqEBluvJfNc4CV5NHzvBZUq3ofl2Tg94lxluqnu8jXPVanI23RvX",
-	"wR2xNOOMfBusV2wf3KN0wWe0/BTr4jtK4vBisAPEjFoC08t+/6cN5qkiKjcpxLAk0nEUpSph6VJZit/M",
-	"ZnPYfNz8HwAA///xWfUp4CIAAA==",
+	"H4sIAAAAAAAC/9xaUW/bNhD+KwK3RyWy1z3pre2GoBiCBUGHYRj6wIjXmJ1EMuQprWf4vxekJJuKREVu",
+	"LVvNm00eybvvuzvfXbIhmSyUFCDQkHRDTLaCgrqP18A4tR+Ulgo0cnDLDEymuUIuhf2KawUkJQY1F/dk",
+	"GxPO+pcLeg89O9uYIMfcLlUPxo2EvPsEGdqzbuO9Wz2SNoIWY5Rxb/YodKMlKzPsqnNXrm80z/y7RVnc",
+	"gbanjqtrTB5KKpDj2tvkAuG+es1Anod08exsTAlb+TbnIHpsLRr/+FnDR5KSn5K9KyW1HyUVp9vYnm0g",
+	"G5Jv1OlRsdYjrGjAYQOwOvXfDew1DtfZrU3pPdtVO+DVVpKLj9LdUZ9gHP+j6wswK6lITB5BG+crZHm5",
+	"sA9LBYIqTlLy6nJxuSAxURRXzshkxwaDHBA6sUF+c+sRfOEGubiPilovCxW1MtaeWqrRWcNDCQbfSOac",
+	"LJMCa1egSuU8c+eST6Zy6IrDkR7hANBglBSm4umXxaKr9Z9/WMN/7dt6Q1l0WylYySy7Mn8JWuJKav4/",
+	"sApzRTFb9QgqRhECoNzYM+fE5LiPxJNjLA125d5qsBAL+ByCWRp82Si75SpUL7BOLwfFa4TVL1IwaOtf",
+	"rMngc/fPNHipGIXWPprPDNbxHzpvZA9h3oT2+SBfngbyCgt2VNzbSSPZ7MqTd2xrT99DDylXgH3hEN2t",
+	"I84uOwxdwZ6g6/395GW4bkxMWRRUr0lK/pGljq5+fx+BYEpy4S5RVNMCELQh6b8bwu0dtrgiTf1Niieg",
+	"PJRcAyMp6hJiz+KnBeGHNnsmSNgtUBbRPPfIMoM0me8lhyMU5gCWdkUs1Zquz87aDthEQyEfm8AYCopK",
+	"sEb4M8dVxFkH41sn5OwOQfwj+Oo3++kIHLvJJeip154uP3Zle3ZizIBf+7kjyMUJM8Yss4U3hHim7PZr",
+	"SbUbkfSV3fsByhRFjT8P8W/5UuTtSzrjhblX6CFUXXl+KlAnLc29Z/qbwWfqaep65SBO0uAZYVqeAqap",
+	"iuka04tsN9ocrshq+ShrRpCd9Pp0Rjl9lm2/OONsezF2NNmgPDSZfDJUndDtZz2nHIbKT6EzQGqSt847",
+	"6mil5oFx5ixIWJ6MhKnzddWe1N+Sze4PMSMblRZfA4OQ13leW/o3xyaQXm4L89r7hfM64x26B/Y4qoXX",
+	"QV1Om+eG3+uDutGWJTjAsu/MN62XyIvJY0doWVUXmm/n1IyvtYKdrI+gOWWpNfu+dnRGrMUYRZcG/YgN",
+	"wX2SLPhMxzTHuPiOkBgfDGaAmJOGwPy83/2ni35siCp1TlKyQlRpkuQyo/lKGkxfLRZLsv2w/RoAAP//",
+	"qo6lge8kAAA=",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

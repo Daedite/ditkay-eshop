@@ -77,3 +77,11 @@ func (d DitKayEshopApiController) DeleteProduct(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, response)
 }
+func (d DitKayEshopApiController) GetProductClient(ctx echo.Context) error {
+	logger.Log.Info("Product received for read all from client.")
+	response, err := d.ProductService.ReadProductsForClient()
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+	return ctx.JSON(http.StatusOK, response)
+}

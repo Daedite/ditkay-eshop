@@ -6,14 +6,22 @@ import (
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/entity"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/logger"
 	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/service/product"
+	"github.com/ESPOIR-DITE/ditkay-eshop/pkg/service/product_media"
 )
 
 type ProductServiceImpl struct {
-	Repository repository.ProductRepository
+	Repository          repository.ProductRepository
+	ProductMediaService product_media.ProductMediaService
 }
 
-func NewProductServiceImpl(repository repository.ProductRepository) *ProductServiceImpl {
-	return &ProductServiceImpl{Repository: repository}
+func NewProductServiceImpl(
+	repository repository.ProductRepository,
+	productMediaService product_media.ProductMediaService,
+) *ProductServiceImpl {
+	return &ProductServiceImpl{
+		Repository:          repository,
+		ProductMediaService: productMediaService,
+	}
 }
 
 var _ product.ProductService = ProductServiceImpl{}
@@ -79,4 +87,21 @@ func getMediaList(list []gorm.Product) *[]entity.Product {
 		})
 	}
 	return &products
+}
+
+func (p ProductServiceImpl) ReadProductsForClient() (*[]entity.ProductClient, error) {
+	products, err := p.ReadProducts()
+	if err != nil {
+		return nil, err
+	}
+	var productClient []entity.ProductClient
+	for _, product := range *products {
+		//TODO we will need to get only the selected productMedia.
+		medias, err := p.ProductMediaService.ReadProductMediasByProductId(product.Id)
+		if err != nil {
+			continue
+		}
+		productClient = append(productClient, entity.ProductClient{Media: medias[0], Product: product})
+	}
+	return &productClient, nil
 }
