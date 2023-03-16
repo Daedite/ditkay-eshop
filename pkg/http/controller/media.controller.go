@@ -78,3 +78,14 @@ func (d DitKayEshopApiController) GetMedias(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, response)
 }
+
+func (d DitKayEshopApiController) RemoveMedias(ctx echo.Context, mediaId string) error {
+	if mediaId == "" {
+		return ctx.NoContent(http.StatusBadRequest)
+	}
+	response, err := d.ProductMediaService.RemoveMedias(mediaId)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, err)
+	}
+	return ctx.JSON(http.StatusOK, response)
+}

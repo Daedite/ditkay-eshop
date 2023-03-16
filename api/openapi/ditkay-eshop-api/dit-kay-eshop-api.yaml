@@ -424,6 +424,25 @@ paths:
           description: Unauthorized
       operationId: get-medias
       description: read all media
+  /media/remove/{mediaId}:
+    parameters:
+      - schema:
+          type: string
+        name: mediaId
+        in: path
+        required: true
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+      operationId: remove-medias
+      description: remove media with id
 components:
   schemas:
     Product:

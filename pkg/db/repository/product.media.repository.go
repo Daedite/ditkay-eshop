@@ -13,4 +13,5 @@ type ProductMediaRepository interface {
 	DeleteProductMedia(productMedia entity.ProductMedia) (bool, error)
 	ReadProductMedias() ([]gormModel.ProductMedia, error)
 	ReadProductMediasByProductId(productId string) ([]gormModel.ProductMedia, error)
+	ReadProductMediaWithImageId(imageId string) (models.ProductMedia, error)
 }

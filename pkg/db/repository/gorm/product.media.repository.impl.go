@@ -42,6 +42,14 @@ func (p ProductMediaRepositoryImpl) ReadProductMedia(id string) (models.ProductM
 	}
 	return gormProductMedia, nil
 }
+func (p ProductMediaRepositoryImpl) ReadProductMediaWithImageId(imageId string) (models.ProductMedia, error) {
+	gormProductMedia := gormModel.ProductMedia{}
+	if err := p.GormDB.Where("media_id = ?", imageId).First(&gormProductMedia).Error; err != nil {
+		logger.Log.Error(fmt.Errorf("failed to get Product media, mediaId: %s", imageId))
+		return nil, err
+	}
+	return gormProductMedia, nil
+}
 
 func (p ProductMediaRepositoryImpl) UpdateProductMedia(productMedia entity.ProductMedia) (models.ProductMedia, error) {
 	var gormProduct *gormModel.ProductMedia = p.Factory.CreateProductMediaFactory(productMedia).(*gormModel.ProductMedia)

@@ -102,3 +102,23 @@ func (p ProductMediaServiceImpl) ReadProductMediasByProductId(productId string) 
 	}
 	return medias, err
 }
+
+func (p ProductMediaServiceImpl) RemoveMedias(mediaId string) (bool, error) {
+	productMedia, err := p.Repository.ReadProductMediaWithImageId(mediaId)
+	if err != nil {
+		return false, err
+	}
+	pm := productMedia.GetProductMedia()
+	if _, err := p.DeleteProductMedia(*pm); err != nil {
+		return false, err
+	}
+	media, err := p.MediaService.ReadMedia(mediaId)
+	if err != nil {
+		return false, err
+	}
+	if _, err := p.MediaService.DeleteMedia(*media); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
